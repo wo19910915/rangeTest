@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+<script>
+
+function rangeTest() {
+	var selection = document.getSelection();
+
+	if (selection.rangeCount > 0) {
+		var range = selection.getRangeAt(0);
+		var testdiv = document.getElementById("testdiv");
+		var selectText = testdiv.firstChild;
+
+		//删除光标前一个字符
+
+		if (range.startOffset == 0) {
+			return;
+		}
+
+		var position = range.startOffset - 1;
+
+		var value = selectText.nodeValue;
+
+		var start = value.substring(0, range.startOffset);
+
+
+		var head = value.substring(0, position);
+
+
+		var foot = value.substring(range.startOffset, selectText.length);
+		var newText = document.createTextNode(head + foot);
+
+
+		//新节点替换旧节点
+		testdiv.replaceChild(newText, selectText);
+
+		//创建一个新的range
+		var newRange = document.createRange();
+		newRange.setStart(newText, position);
+		newRange.setEnd(newText, position);
+
+		selection.removeAllRanges();
+		selection.addRange(newRange);
+
+
+	}
+
+
+
+}
+
+
+function move(position) {
+	var selection = document.getSelection();
+	if (selection.rangeCount > 0) {
+		//1获取当前div的range选区位置2左移动减1,右移动加1
+		var range = selection.getRangeAt(0);
+		var testdiv = document.getElementById("testdiv");
+		var selectText = testdiv.firstChild;
+		var startOffset = -1;
+
+		if (position == 0) {
+			if (range.startOffset > 0) {
+				startOffset = range.startOffset - 1;
+			} else {
+				startOffset = 0;
+			}
+
+
+		} else {
+			if (range.startOffset < selectText.length) {
+				startOffset = range.startOffset + 1;
+			} else {
+				startOffset = selectText.length;
+			}
+
+		}
+
+		//创建一个新的range
+		var newRange = document.createRange();
+		newRange.setStart(selectText, startOffset);
+		newRange.setEnd(selectText, startOffset);
+
+
+		selection.removeAllRanges();
+		selection.addRange(newRange);
+	}
+}
+
+function insert(fn) {
+	var selection = document.getSelection();
+
+	if(selection.rangeCount > 0) {
+		var range = selection.getRangeAt(0);
+		var testdiv = document.getElementById("testdiv");
+		var selectText = testdiv.firstChild;
+
+		var position = range.startOffset + 1;
+		var newText = null;
+		
+		if(selectText){
+		var value = selectText.nodeValue;
+			var head = value.substring(0, position-1);
+			var foot = value.substring(range.startOffset, selectText.length);
+			newText = document.createTextNode(head + fn + foot);
+
+			//新节点替换旧节点
+			testdiv.replaceChild(newText, selectText);
+	
+		
+		}else{
+		
+				 newText = document.createTextNode(fn);
+		testdiv.appendChild(newText);
+
+		
+		}
+	
+	//创建一个新的range
+			var newRange = document.createRange();
+			newRange.setStart(newText, position);
+			newRange.setEnd(newText, position);
+
+			selection.removeAllRanges();
+			selection.addRange(newRange);
+
+			
+		
+	}
+}
+
+function delAll() {   
+	var selection = document.getSelection();
+	if(selection.rangeCount > 0) {
+		var range = selection.getRangeAt(0);
+		var testdiv = document.getElementById("testdiv");
+		var selectText = testdiv.firstChild;
+          if(selectText){
+		  range.selectNodeContents(selectText);
+		  range.deleteContents();
+		  }
+		
+		
+	}
+}
+
+</script>
+ </head>
+ <body>
+  <div id="testdiv"  contentEditable="true"  style="font-size:20px;width:400px;height:30px; line-height:30px; border:1px solid #000;overflow:hidden;"></div>
+ <input type="button" value="删除" onclick="rangeTest()"/>
+ <input type="button" value="左" onclick="move(0)"/>
+ <input type="button" value="右" onclick="move(1)"/>
+  <input type="button" value="插入" onclick="insert('a')"/>
+    <input type="button" value="清空" onclick="delAll()"/>
+
+ </body>
+</html>
